@@ -1,0 +1,58 @@
+---
+# A per-vhost document root will be created, and two directories added:
+# one for the public documents and the other for Apache logs
+apache_document:
+  parent: /var/www
+  child:
+    html: html
+    log: log
+
+apache_listen:
+  address: "*"
+  port:
+    plain: 80
+    ssl: 443
+
+# Plain HTTP vhosts
+apache_vhosts:
+  # Used properties: servername
+  - servername: artemis.example
+  - servername: helios.example
+
+apache_ssl_cert_generate: yes
+
+# Ignore if apache_ssl_cert_generate: no
+apache_ssl_cert_country: ST
+apache_ssl_cert_state: State
+apache_ssl_cert_city: City
+apache_ssl_cert_org: Organization name
+apache_ssl_cert_ou: Department
+apache_ssl_cert_cn: artemis.example
+apache_ssl_cert_email: email@artemis.eixample
+apache_ssl_cert_filename: ansible_deployed
+# The cert/key paths can be overridden in vars/
+
+# SSL vhosts
+# each one will be provided with a plain vhost permanently redirected to the
+# SSL counterpart
+apache_vhosts_ssl:
+  # Used properties: servername, ssl_cert_path, ssl_cert_key_path
+  - servername: demeter.example
+    ssl_cert_path: /etc/pki/tls/certs/ansible_deployed.crt
+    ssl_cert_key_path: /etc/pki/tls/private/ansible_deployed.key
+  - servername: hades.example
+    ssl_cert_path: /etc/pki/tls/certs/ansible_deployed.crt
+    ssl_cert_key_path: /etc/pki/tls/private/ansible_deployed.key
+
+mariadb_users_create: yes
+
+# MariaDB users to be created, their privileges can be fine tuned editing
+# templates/mariadb-users.j2
+# Ignore if mariadb_users_create: no
+mariadb_users:
+  - username: username
+    password: ""
+    host: localhost
+  - username: mysql
+    password: ""
+    host: localhost

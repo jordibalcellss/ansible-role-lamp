@@ -1,0 +1,13 @@
+---
+- name: Provide Remi's RPM repository
+  yum:
+    name: "http://rpms.remirepo.net/enterprise/remi-release-{{
+      php_version[0:1] }}.rpm"
+    state: present
+
+- name: Install packages
+  yum:
+    name: "{{ php_packages }}"
+    enablerepo: "remi-php{{ php_version }}"
+    state: latest
+  notify: Reload apache

@@ -1,0 +1,14 @@
+---
+- name: Install packages
+  yum:
+    name: "{{ mariadb_packages }}"
+    state: present
+  notify: Reload mariadb
+
+- name: Enable the service
+  service:
+    name: "{{ mariadb_unit_name }}"
+    enabled: yes
+
+- import_tasks: mariadb-nodist-users.yml
+  when: mariadb_users_create

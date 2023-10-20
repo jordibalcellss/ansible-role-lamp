@@ -1,0 +1,20 @@
+---
+- name: Template out SQL queries file
+  template:
+    src: mariadb-users.sql.j2
+    dest: /tmp/mariadb-users.sql
+
+- name: Run the queries
+  shell: "mysql < /tmp/mariadb-users.sql"
+  become_user: root
+  register: queries
+  args:
+    warn: false
+
+- debug:
+    var: queries
+
+- name: Remove the queries file
+  file:
+    path: /tmp/mariadb-users.sql
+    state: absent

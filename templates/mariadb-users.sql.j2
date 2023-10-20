@@ -1,0 +1,4 @@
+{% for account in mariadb_users %}
+CREATE USER '{{ account.username }}'@'{{ account.host }}' IDENTIFIED BY '{{ account.password }}';
+GRANT ALL PRIVILEGES ON *.* to '{{ account.username }}'@'{{ account.host }}';
+{% endfor %}

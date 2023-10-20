@@ -1,0 +1,22 @@
+---
+apache_unit_name: httpd
+apache_conf_path: /etc/httpd/conf.d
+apache_packages:
+  - httpd
+  - mod_ssl
+  - policycoreutils-python
+
+# Ignore if apache_ssl_cert_generate: no
+apache_ssl_cert_path: /etc/pki/tls/certs
+apache_ssl_cert_key_path: /etc/pki/tls/private
+
+# Installing PHP from Remi's RPM repository
+php_version: "74"
+php_packages:
+  - php
+  - php-mysqlnd
+  - php-mbstring
+
+mariadb_unit_name: mariadb
+mariadb_packages:
+  - mariadb-server

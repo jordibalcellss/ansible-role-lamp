@@ -1,0 +1,10 @@
+---
+- name: Reload apache
+  service:
+    name: "{{ apache_unit_name }}"
+    state: reloaded
+
+- name: Reload mariadb
+  service:
+    name: "{{ mariadb_unit_name }}"
+    state: reloaded
