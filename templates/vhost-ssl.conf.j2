@@ -1,20 +1,26 @@
 <VirtualHost {{ apache_listen.address }}:{{ apache_listen.port.plain }}>
-  ServerName {{ item.servername }}
-  Redirect "/" "https://{{ item.servername }}/"
+  ServerName {{ item.server_name }}
+{% if item.server_alias is defined %}
+  ServerAlias {{ item.server_alias }}
+{% endif %}
+  Redirect "/" "https://{{ item.server_name }}/"
 </VirtualHost>
 
 <VirtualHost {{ apache_listen.address }}:{{ apache_listen.port.ssl }}>
-  ServerName {{ item.servername }}
-  DocumentRoot {{ apache_document.parent }}/{{ item.servername }}/{{ apache_document.child.html }}
+  ServerName {{ item.server_name }}
+{% if item.server_alias is defined %}
+  ServerAlias {{ item.server_alias }}
+{% endif %}
+  DocumentRoot {{ apache_document.parent }}/{{ item.server_name }}/{{ apache_document.child.html }}
   SSLEngine on
   SSLProtocol all -SSLv2 -SSLv3
   SSLCipherSuite HIGH:3DES:!aNULL:!MD5:!SEED:!IDEA
-  SSLCertificateFile {{ item.ssl_cert_path }}
-  SSLCertificateKeyFile {{ item.ssl_cert_key_path }}
-  <Directory {{ apache_document.parent }}/{{ item.servername }}/{{ apache_document.child.html }}>
+  SSLCertificateFile {{ apache_ssl_cert_path }}/{{ item.ssl_cert_filename }}.crt
+  SSLCertificateKeyFile {{ apache_ssl_cert_key_path }}/{{ item.ssl_cert_filename }}.key
+  <Directory {{ apache_document.parent }}/{{ item.server_name }}/{{ apache_document.child.html }}>
     AllowOverride All
     Options +FollowSymLinks
   </Directory>
-  ErrorLog {{ apache_document.parent }}/{{ item.servername }}/{{ apache_document.child.log }}/error.log
-  CustomLog {{ apache_document.parent }}/{{ item.servername }}/{{ apache_document.child.log }}/requests.log combined
+  ErrorLog {{ apache_document.parent }}/{{ item.server_name }}/{{ apache_document.child.log }}/error.log
+  CustomLog {{ apache_document.parent }}/{{ item.server_name }}/{{ apache_document.child.log }}/requests.log combined
 </VirtualHost>

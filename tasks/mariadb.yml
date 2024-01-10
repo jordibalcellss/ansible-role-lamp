@@ -8,7 +8,10 @@
 - name: Enable the service
   service:
     name: "{{ mariadb_unit_name }}"
-    enabled: yes
+    enabled: true
 
-- import_tasks: mariadb-nodist-users.yml
+- name: Flush handlers
+  meta: flush_handlers
+
+- import_tasks: mariadb-users.yml
   when: mariadb_users_create

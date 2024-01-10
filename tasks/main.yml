@@ -1,4 +1,4 @@
 ---
-- import_tasks: apache-centos.yml
-- import_tasks: php-centos.yml
-- import_tasks: mariadb-centos.yml
+- import_tasks: apache.yml
+- import_tasks: php.yml
+- import_tasks: mariadb.yml

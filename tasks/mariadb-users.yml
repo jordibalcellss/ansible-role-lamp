@@ -1,5 +1,5 @@
 ---
-- name: Template out SQL queries file
+- name: Template out the SQL queries file
   template:
     src: mariadb-users.sql.j2
     dest: /tmp/mariadb-users.sql
@@ -11,8 +11,9 @@
   args:
     warn: false
 
-- debug:
-    var: queries
+- fail:
+    msg: "The batch queries failed"
+  when: queries.rc
 
 - name: Remove the queries file
   file:

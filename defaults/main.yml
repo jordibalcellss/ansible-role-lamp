@@ -15,40 +15,49 @@ apache_listen:
 
 # Plain HTTP vhosts
 apache_vhosts:
-  # Used properties: servername
-  - servername: artemis.example
-  - servername: helios.example
+  # Available entries: server_name, server_alias
+  - server_name: artemis.example
+    server_alias: www.artemis.example
+  - server_name: helios.example
 
-apache_ssl_cert_generate: yes
+# SSL vhosts
+#
+# Each one will be provided with a plain vhost permanently redirected to the
+# SSL counterpart
+#
+# If ssl_cert_transfer: true, the certificate and key found in files/
+# (matching ssl_cert_filename variable plus .crt/.key) will be copied
+# to the server (if not yet there)
+#
+# If false, a self-signed certificate will be created as per the OpenSSL
+# subject settings beneath apache_vhosts_ssl
+apache_vhosts_ssl:
+  # Available entries: server_name, server_alias, ssl_cert_filename
+  # ssl_cert_transfer
+  - server_name: demeter.example
+    ssl_cert_filename: demeter_example
+    ssl_cert_transfer: true
 
-# Ignore if apache_ssl_cert_generate: no
+# Ignore if ssl_cert_transfer: false across all vhosts
+#
+# The CN will be set to the vhost's server_name
 apache_ssl_cert_country: ST
 apache_ssl_cert_state: State
 apache_ssl_cert_city: City
 apache_ssl_cert_org: Organization name
 apache_ssl_cert_ou: Department
-apache_ssl_cert_cn: artemis.example
-apache_ssl_cert_email: email@artemis.eixample
-apache_ssl_cert_filename: ansible_deployed
-# The cert/key paths can be overridden in vars/
+apache_ssl_cert_email: email@demeter.example
 
-# SSL vhosts
-# each one will be provided with a plain vhost permanently redirected to the
-# SSL counterpart
-apache_vhosts_ssl:
-  # Used properties: servername, ssl_cert_path, ssl_cert_key_path
-  - servername: demeter.example
-    ssl_cert_path: /etc/pki/tls/certs/ansible_deployed.crt
-    ssl_cert_key_path: /etc/pki/tls/private/ansible_deployed.key
-  - servername: hades.example
-    ssl_cert_path: /etc/pki/tls/certs/ansible_deployed.crt
-    ssl_cert_key_path: /etc/pki/tls/private/ansible_deployed.key
+# Remote certificate/key paths
+apache_ssl_cert_path: /etc/pki/tls/certs
+apache_ssl_cert_key_path: /etc/pki/tls/private
 
-mariadb_users_create: yes
+mariadb_users_create: true
 
 # MariaDB users to be created, their privileges can be fine tuned editing
 # templates/mariadb-users.j2
-# Ignore if mariadb_users_create: no
+#
+# Ignore if mariadb_users_create: false
 mariadb_users:
   - username: username
     password: ""

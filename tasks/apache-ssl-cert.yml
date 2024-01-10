@@ -1,0 +1,39 @@
+---
+- name: Stat SSL certificate
+  stat:
+    path: "{{ apache_ssl_cert_path }}/{{ item.ssl_cert_filename }}.crt"
+  register: result
+
+- name: Generate an SSL certificate and a key
+  shell: "openssl req -x509 -nodes -days 1825 -newkey rsa:2048 -keyout {{
+    apache_ssl_cert_key_path }}/{{ ssl_cert_filename }}.key -out {{
+    apache_ssl_cert_path }}/{{ ssl_cert_filename }}.crt -subj \"/C={{
+    apache_ssl_cert_country }}/ST={{ apache_ssl_cert_state }}/L={{
+    apache_ssl_cert_city }}/O={{ apache_ssl_cert_org }}/OU={{
+    apache_ssl_cert_ou }}/CN={{ item.server_name }}/emailAddress={{
+    apache_ssl_cert_email }}\""
+  when:
+    - not item.ssl_cert_transfer
+    - not result.stat.exists
+
+- name: Transfer the certificate
+  copy:
+    src: "{{ item.ssl_cert_filename }}.crt"
+    dest: "{{ apache_ssl_cert_path }}/{{ item.ssl_cert_filename }}.crt"
+  when:
+    - item.ssl_cert_transfer
+    - not result.stat.exists
+
+- name: Transfer the key
+  copy:
+    src: "{{ item.ssl_cert_filename }}.key"
+    dest: "{{ apache_ssl_cert_key_path }}/{{ item.ssl_cert_filename }}.key"
+  when:
+    - item.ssl_cert_transfer
+    - not result.stat.exists
+
+- name: Set modes for the key
+  file:
+    path: "{{ apache_ssl_cert_key_path }}/{{ item.ssl_cert_filename }}.key"
+    mode: 0600
+  when: not result.stat.exists

@@ -1,0 +1,10 @@
+---
+- name: Enable dnf PHP module
+  shell: "dnf module enable -y php:{{ php_version }}"
+  when: php_version != 'default'
+
+- name: Install packages
+  yum:
+    name: "{{ php_packages }}"
+    state: latest
+  notify: Reload apache

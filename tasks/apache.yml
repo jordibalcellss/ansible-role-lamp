@@ -1,0 +1,109 @@
+---
+- name: Install packages
+  yum:
+    name: "{{ apache_packages }}"
+    state: present
+
+- name: Create vhost document root paths
+  file:
+    path: "{{ apache_document.parent }}/{{ item.server_name }}/{{
+      apache_document.child.html }}"
+    state: directory
+  loop: "{{ apache_vhosts }}"
+
+- name: Create vhost document root paths - SSL
+  file:
+    path: "{{ apache_document.parent }}/{{ item.server_name }}/{{
+      apache_document.child.html }}"
+    state: directory
+  loop: "{{ apache_vhosts_ssl }}"
+
+- name: Create vhost log directories
+  file:
+    path: "{{ apache_document.parent }}/{{ item.server_name }}/{{
+      apache_document.child.log }}"
+    state: directory
+  loop: "{{ apache_vhosts }}"
+
+- name: Create vhost log directories - SSL
+  file:
+    path: "{{ apache_document.parent }}/{{ item.server_name }}/{{
+      apache_document.child.log }}"
+    state: directory
+  loop: "{{ apache_vhosts_ssl }}"
+
+- name: Change context for the log directories
+  shell: "chcon -t \"httpd_log_t\" {{ apache_document.parent }}/{{
+    item.server_name }}/{{ apache_document.child.log }}"
+  become_user: root
+  args:
+    warn: false
+  loop: "{{ apache_vhosts }}"
+
+- name: Change context for the log directories - SSL
+  shell: "chcon -t \"httpd_log_t\" {{ apache_document.parent }}/{{
+    item.server_name }}/{{ apache_document.child.log }}"
+  become_user: root
+  args:
+    warn: false
+  loop: "{{ apache_vhosts_ssl }}"
+
+- name: Provide index files
+  template:
+    src: index.html.j2
+    dest: "{{ apache_document.parent }}/{{ item.server_name }}/{{ 
+      apache_document.child.html }}/index.html"
+  loop: "{{ apache_vhosts }}"
+
+- name: Provide index files - SSL
+  template:
+    src: index.html.j2
+    dest: "{{ apache_document.parent }}/{{ item.server_name }}/{{ 
+      apache_document.child.html }}/index.html"
+  loop: "{{ apache_vhosts_ssl }}"
+
+- name: Change context for the document root paths
+  shell: "chcon -R -t \"httpd_sys_content_t\" {{ apache_document.parent }}/{{
+    item.server_name }}/{{ apache_document.child.html }}"
+  become_user: root
+  args:
+    warn: false
+  loop: "{{ apache_vhosts }}"
+
+- name: Change context for the document root paths - SSL
+  shell: "chcon -R -t \"httpd_sys_content_t\" {{ apache_document.parent }}/{{
+    item.server_name }}/{{ apache_document.child.html }}"
+  become_user: root
+  args:
+    warn: false
+  loop: "{{ apache_vhosts_ssl }}"
+
+- name: Provide vhost configuration files
+  template:
+    src: vhost.conf.j2
+    dest: "{{ apache_conf_path }}/a_{{ item.server_name }}.conf"
+  loop: "{{ apache_vhosts }}"
+  notify: Reload apache
+
+- name: Provide vhost configuration files - SSL
+  template:
+    src: vhost-ssl.conf.j2
+    dest: "{{ apache_conf_path }}/a_{{ item.server_name }}.conf"
+  loop: "{{ apache_vhosts_ssl }}"
+  notify: Reload apache
+
+- name: Provide vhost configuration files - document root access
+  template:
+    src: vhost-doc-root.j2
+    dest: "{{ apache_conf_path }}/a_.conf"
+  notify: Reload apache
+  when: apache_document.parent != '/var/www'
+
+- name: Provide certificates
+  include_tasks: apache-ssl-cert.yml
+  loop: "{{ apache_vhosts_ssl }}"
+
+- name: Enable the service
+  service:
+    name: "{{ apache_unit_name }}"
+    enabled: true
