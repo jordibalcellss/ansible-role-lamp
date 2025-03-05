@@ -8,8 +8,6 @@
   shell: "mysql < /tmp/mariadb-users.sql"
   become_user: root
   register: queries
-  args:
-    warn: false
 
 - fail:
     msg: "The batch queries failed"

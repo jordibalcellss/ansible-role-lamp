@@ -36,16 +36,12 @@
   shell: "chcon -t \"httpd_log_t\" {{ apache_document.parent }}/{{
     item.server_name }}/{{ apache_document.child.log }}"
   become_user: root
-  args:
-    warn: false
   loop: "{{ apache_vhosts }}"
 
 - name: Change context for the log directories - SSL
   shell: "chcon -t \"httpd_log_t\" {{ apache_document.parent }}/{{
     item.server_name }}/{{ apache_document.child.log }}"
   become_user: root
-  args:
-    warn: false
   loop: "{{ apache_vhosts_ssl }}"
 
 - name: Provide index files
@@ -66,16 +62,12 @@
   shell: "chcon -R -t \"httpd_sys_content_t\" {{ apache_document.parent }}/{{
     item.server_name }}/{{ apache_document.child.html }}"
   become_user: root
-  args:
-    warn: false
   loop: "{{ apache_vhosts }}"
 
 - name: Change context for the document root paths - SSL
   shell: "chcon -R -t \"httpd_sys_content_t\" {{ apache_document.parent }}/{{
     item.server_name }}/{{ apache_document.child.html }}"
   become_user: root
-  args:
-    warn: false
   loop: "{{ apache_vhosts_ssl }}"
 
 - name: Provide vhost configuration files
