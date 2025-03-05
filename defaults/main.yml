@@ -38,7 +38,7 @@ apache_vhosts_ssl:
     ssl_cert_filename: demeter_example
     ssl_cert_transfer: true
 
-# Ignore if ssl_cert_transfer: false across all vhosts
+# Ignore if ssl_cert_transfer: true across all vhosts
 #
 # The CN will be set to the vhost's server_name
 apache_ssl_cert_country: ST

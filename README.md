@@ -99,8 +99,6 @@ The playbook will handle the necessary SELinux security contexts.
   tasks:
   - import_role:
       name: ansible-role-lamp
-      vars_from: centos.yml
-
 ```
 
 ## License
