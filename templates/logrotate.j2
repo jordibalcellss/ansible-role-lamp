@@ -1,0 +1,7 @@
+{{ apache_document.parent }}/{{ item.servername }}/{{ apache_document.child.log }}/*.log {
+  {{ logrotate.frequency }}
+  rotate {{ logrotate.keep }}
+  copytruncate
+  notifempty
+  missingok
+}

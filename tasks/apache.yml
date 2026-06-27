@@ -99,3 +99,5 @@
   service:
     name: "{{ apache_unit_name }}"
     enabled: true
+
+- import_tasks: logrotate.yml

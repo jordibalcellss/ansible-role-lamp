@@ -1,0 +1,12 @@
+---
+- name: Provide log rotation
+  template:
+    src: logrotate.j2
+    dest: "/etc/logrotate.d/httpd_{{ item.servername }}"
+  loop: "{{ apache_vhosts }}"
+
+- name: Provide log rotation - SSL
+  template:
+    src: logrotate.j2
+    dest: "/etc/logrotate.d/httpd_{{ item.servername }}"
+  loop: "{{ apache_vhosts_ssl }}"
